@@ -13,8 +13,8 @@ use base qw(Module::Patch);
 our %config;
 
 my $p_simple_request = sub {
-    require Log::Any::IfLOG;
-    my $log = Log::Any::IfLOG->get_logger;
+    require Log::ger;
+    my $log = Log::ger->get_logger;
 
     my $ctx  = shift;
     my $orig = $ctx->{orig};
@@ -24,14 +24,16 @@ my $p_simple_request = sub {
 
     if ($log->is_trace && $request && ref($request) && $request->can('method')) {
 
-        # there is no equivalent of caller_depth in Log::Any, so we do this only
-        # for Log4perl
-        local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1
-            if $Log::{"Log4perl::"};
+        # XXX use equivalent for Log::ger
+
+        # # there is no equivalent of caller_depth in Log::Any, so we do this only
+        # # for Log4perl
+        # local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1
+        #     if $Log::{"Log4perl::"};
 
         my $content = $request->content;
-        $log->tracef("HTTP request body (len=%d):\n%s\n\n",
-                     length($content), $content);
+        $log->trace("HTTP request body (len=%d):\n%s\n\n",
+                    length($content), $content);
 
     }
 
@@ -65,7 +67,7 @@ sub patch_data {
 
 Sample script and output:
 
- % TRACE=1 perl -MLog::Any::App
+ % TRACE=1 perl -MLog::ger::Output=Screen
    -MNet::HTTP::Methods::Patch::LogRequest \
    -MLWP::UserAgent::Patch::LogRequestContent \
    -MLWP::UserAgent \
@@ -84,14 +86,14 @@ Sample script and output:
  Content-Length: 7
  Content-Type: application/x-www-form-urlencoded
 
-Or you can also use via L<Log::Any::For::LWP>.
+Or you can also use via L<Log::ger::For::LWP>.
 
 
 =head1 DESCRIPTION
 
 This module patches LWP::UserAgent (which is used by LWP::Simple,
 WWW::Mechanize, among others) so that HTTP request contents are logged using
-L<Log::Any>.
+L<Log::ger>.
 
 
 =head1 FAQ
@@ -113,7 +115,7 @@ being sent to servers.
 
 Use L<LWP::UserAgent::Patch::LogResponse> to log HTTP responses.
 
-L<Log::Any::For::LWP> bundles all three mentioned patches in a single convenient
+L<Log::ger::For::LWP> bundles all three mentioned patches in a single convenient
 package.
 
 =cut
